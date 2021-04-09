@@ -1,13 +1,26 @@
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Matrix {
 
-    public static double[][] multiply(double[][] a, double[][] b) {
+    public static double[][] multiplySquareMatrix(double[][] a, double[][] b) {
         double[][] result = new double[a.length][a[0].length];
         for (int i = 0; i<a.length;i++){
             for (int j = 0; j<a[0].length;j++){
                 for (int k = 0; k<a[0].length; k++){
                     result[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+        return result;
+    }
+
+    public static double[][] multiplyMatrix(double[][] a, double[][] b) {
+        double[][] result = new double[a.length][b[0].length];
+        for(int i = 0; i < a.length; i++){
+            for (int j = 0; j < b[0].length; j++){
+                for (int k = 0; k < b[0].length; k++){
+                    result[i][j] = a[i][k] * b[k][j];
                 }
             }
         }
@@ -77,6 +90,95 @@ public class Matrix {
             }
         }
         return new_arr;
+    }
+
+    public static double[][] getUserMatrix(){
+        Scanner scanner = new Scanner(System.in);
+
+        String s = scanner.next();
+        String[] ss = s.split(",");
+        int r = (int) Math.sqrt(ss.length);
+        double[][] first = new double[r][r];
+        for(int i = 0; i < ss.length; i++){
+            first[i / r][i % r] = parseDouble(ss[i]);
+        }
+        return first;
+    }
+
+    public static void startSequence(){
+        double[][] arr = getUserMatrix();
+        Scanner scanner = new Scanner(System.in);
+        String line = "";
+        while (!(line = scanner.nextLine()).equals("-1")) {
+            if (line.length() == 0) continue;
+            try {
+                applyOperation(arr, line);
+            }catch (Exception e){
+                continue;
+            }
+            System.out.println(Arrays.deepToString(arr));
+        }
+    }
+
+    public static double[][] applyOperation(double[][] arr, String operation){
+        String[] s = operation.split(" ");
+        int affectedRow = (int) parseDouble(s[0].charAt(1) + "") - 1;
+        if (s[1].equals("<>")){
+            swipeRowsOperation(arr, affectedRow, (int) parseDouble(s[2].charAt(1) + "") - 1);
+        }else{// else if (s[1].equals("+=")){
+            if (s.length == 3){
+                multiplyRowByConstantOperation(arr, affectedRow, parseDouble(s[2]));
+            }else{
+                if (s[2].matches("[a-zA-Z].*")){
+                    multiplyRowByConstantAndAddToAnotherRowOperation(arr, affectedRow, (int) parseDouble(s[2].charAt(1) + "") - 1, 1);
+                }else{
+                    double constant = parseDouble(s[2]);
+                    multiplyRowByConstantAndAddToAnotherRowOperation(arr, affectedRow, (int) parseDouble(s[3].charAt(1) + "") - 1, constant);
+                }
+            }
+        }
+        return arr;
+    }
+
+    public static double[][] multiplyRowByConstantOperation(double[][] arr, int row, double constant){
+        for (int i = 0; i<arr[row].length; i++){
+            arr[row][i] *= constant;
+        }
+        return arr;
+    }
+
+    public static double[][] swipeRowsOperation(double[][] arr, int firstRow, int secondRow){
+        for (int i = 0; i<arr[firstRow].length; i++){
+            double tmp = arr[firstRow][i];
+            arr[firstRow][i] = arr[secondRow][i];
+            arr[secondRow][i] = tmp;
+        }
+        return arr;
+    }
+
+    public static double[][] multiplyRowByConstantAndAddToAnotherRowOperation(double[][] arr, int firstRow, int secondRow, double constant){
+        double[] tmp = Arrays.copyOf(arr[secondRow], arr[firstRow].length);
+        for (int i = 0; i<arr[firstRow].length; i++){
+            arr[firstRow][i] += tmp[i] * constant;
+        }
+        return arr;
+    }
+
+//    public static double[][] multiplyRowByConstantOperation(double[][] arr, int row, double constant){
+//        for (int i = 0; i<arr[row].length; i++){
+//            arr[row][i] *= constant;
+//        }
+//        return arr;
+//    }
+
+    public static double parseDouble(String num){
+        String[] numArray = num.split("\\.");
+        if (numArray.length > 1){
+            return num.charAt(0) == '-' ? Integer.parseInt(numArray[0]) + (Integer.parseInt(numArray[1]) / Math.pow(10.0, numArray[1].length())) * -1 :
+                    Integer.parseInt(numArray[0]) + (Integer.parseInt(numArray[1]) /  Math.pow(10.0, numArray[1].length()));
+        }
+        System.out.println(Integer.parseInt(numArray[0]));
+        return Integer.parseInt(numArray[0]);
     }
 }
 
