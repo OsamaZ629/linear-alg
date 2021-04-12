@@ -107,20 +107,40 @@ public class Matrix {
 
     public static void startSequence(){
         double[][] arr = getUserMatrix();
+        double[][] identityMatrix = getIdentityMatrix(arr.length);
         Scanner scanner = new Scanner(System.in);
         String line = "";
+        System.out.println(Arrays.deepToString(identityMatrix));
+        System.out.println(Arrays.deepToString(arr));
         while (!(line = scanner.nextLine()).equals("-1")) {
             if (line.length() == 0) continue;
             try {
+                applyOperation(identityMatrix, line);
                 applyOperation(arr, line);
             }catch (Exception e){
                 continue;
             }
-            System.out.println(Arrays.deepToString(arr));
+            printMatrix(identityMatrix);
+            printMatrix(arr);
         }
+       printMatrix(multiplySquareMatrix(arr, identityMatrix));
     }
 
-    public static double[][] applyOperation(double[][] arr, String operation){
+    public static double[][] getIdentityMatrix(int length){
+        double[][] result = new double[length][length];
+        for (int i = 0; i < length; i++){
+            for (int j = 0; j < length; j++){
+                if (j == i){
+                    result[i][j] = 1;
+                    continue;
+                }
+                result[i][j] = 0;
+            }
+        }
+        return result;
+    }
+
+    private static double[][] applyOperation(double[][] arr, String operation){
         String[] s = operation.split(" ");
         int affectedRow = (int) parseDouble(s[0].charAt(1) + "") - 1;
         if (s[1].equals("<>")){
@@ -140,14 +160,14 @@ public class Matrix {
         return arr;
     }
 
-    public static double[][] multiplyRowByConstantOperation(double[][] arr, int row, double constant){
+    private static double[][] multiplyRowByConstantOperation(double[][] arr, int row, double constant){
         for (int i = 0; i<arr[row].length; i++){
             arr[row][i] *= constant;
         }
         return arr;
     }
 
-    public static double[][] swipeRowsOperation(double[][] arr, int firstRow, int secondRow){
+    private static double[][] swipeRowsOperation(double[][] arr, int firstRow, int secondRow){
         for (int i = 0; i<arr[firstRow].length; i++){
             double tmp = arr[firstRow][i];
             arr[firstRow][i] = arr[secondRow][i];
@@ -156,7 +176,7 @@ public class Matrix {
         return arr;
     }
 
-    public static double[][] multiplyRowByConstantAndAddToAnotherRowOperation(double[][] arr, int firstRow, int secondRow, double constant){
+    private static double[][] multiplyRowByConstantAndAddToAnotherRowOperation(double[][] arr, int firstRow, int secondRow, double constant){
         double[] tmp = Arrays.copyOf(arr[secondRow], arr[firstRow].length);
         for (int i = 0; i<arr[firstRow].length; i++){
             arr[firstRow][i] += tmp[i] * constant;
@@ -171,14 +191,23 @@ public class Matrix {
 //        return arr;
 //    }
 
-    public static double parseDouble(String num){
+    private static double parseDouble(String num){
         String[] numArray = num.split("\\.");
         if (numArray.length > 1){
             return num.charAt(0) == '-' ? Integer.parseInt(numArray[0]) + (Integer.parseInt(numArray[1]) / Math.pow(10.0, numArray[1].length())) * -1 :
                     Integer.parseInt(numArray[0]) + (Integer.parseInt(numArray[1]) /  Math.pow(10.0, numArray[1].length()));
         }
-        System.out.println(Integer.parseInt(numArray[0]));
         return Integer.parseInt(numArray[0]);
+    }
+
+    public static void printMatrix(double[][] matrix){
+        for (double[] row: matrix){
+            System.out.print("| ");;
+            for (double num: row){
+                System.out.print(num + " ");
+            }
+            System.out.println("|");
+        }
     }
 }
 

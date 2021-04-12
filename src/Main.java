@@ -14,5 +14,20 @@ public class Main {
                 {4, 1}};
 
         Matrix.startSequence();
+//        Matrix.printMatrix(Matrix.multiplySquareMatrix(Matrix.getUserMatrix(), Matrix.getUserMatrix()));
+        double[][] s = Matrix.getUserMatrix();
+        double[][] d = Matrix.getUserMatrix();
+        Matrix.printMatrix(s);
+        Matrix.printMatrix(d);
+        System.out.println("det s: " + Matrix.getDeterminant(s));
+        System.out.println("det d: " + Matrix.getDeterminant(d));
+        System.out.println("det d + det s: " + (Matrix.getDeterminant(d) + Matrix.getDeterminant(s)));
+
+        for(int i = 0; i < s.length; i++){
+             s[2][i] += d[2][i];
+        }
+        Matrix.printMatrix(s);
+        System.out.println("det (d + s): " + Matrix.getDeterminant(s));
+
     }
 }
